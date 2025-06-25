@@ -179,5 +179,6 @@ The application handles various error scenarios:
 
 This project is for educational purposes only. Please respect YouTube's Terms of Service and copyright laws.
 
-🙌 Author
+## 🙌 Author
+
 Built with ❤️ by Arya (Ayush Gangwar)
