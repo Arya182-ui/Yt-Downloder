@@ -8,17 +8,14 @@ from urllib.parse import urlparse, parse_qs
 import yt_dlp
 from flask import Flask, request, jsonify, send_file, after_this_request
 from flask_cors import CORS
+from flask_cors import cross_origin
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import threading
 from zipfile import ZipFile
-import logging
 
 app = Flask(__name__)
 CORS(app)
-
-# Add logging configuration to see errors in production
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Rate limiting setup
 limiter = Limiter(
@@ -31,6 +28,20 @@ limiter = Limiter(
 DOWNLOADS_DIR = Path("downloads")
 DOWNLOADS_DIR.mkdir(exist_ok=True)
 
+@app.errorhandler(429)
+@cross_origin()
+def rate_limit_handler(e):
+    return jsonify({'error': 'Rate limit exceeded. Please try again later.'}), 429
+
+@app.errorhandler(404)
+@cross_origin()
+def not_found_handler(e):
+    return jsonify({'error': 'Endpoint not found'}), 404
+
+@app.errorhandler(500)
+@cross_origin()
+def internal_error_handler(e):
+    return jsonify({'error': 'Internal server error'}), 500
 
 def verify_hcaptcha(token):
     secret = os.getenv("HCAPTCHA_SECRET")
@@ -109,29 +120,20 @@ def get_video_info(url):
             formats = []
             
             # Video formats
-            video_qualities = [1080, 720, 360]
-            for quality in video_qualities:
-                # Find a representative format for this quality to get the size
-                target_format = None
-                for f in info.get('formats', []):
-                    if f.get('height') == quality and f.get('vcodec') != 'none' and f.get('ext') == 'mp4':
-                        target_format = f
-                        # Prefer formats with audio included (progressive)
-                        if f.get('acodec') != 'none':
-                            break
-                
-                if target_format:
-                    size_bytes = target_format.get('filesize') or target_format.get('filesize_approx')
-                    if size_bytes:
-                        size_str = f"{size_bytes / (1024*1024):.1f} MB"
-                    else:
-                        # Fallback to original estimation if size is not available
-                        size_mb = duration * (quality / 100) if duration else 50
-                        size_str = f'{size_mb:.1f} MB'
+            video_formats = ['360', '720', '1080']
+            for quality in video_formats:
+                # Check if format is available
+                available = any(
+                    f.get('height') == int(quality) and f.get('vcodec') != 'none'
+                    for f in info.get('formats', [])
+                )
+                if available:
+                    # Estimate file size (rough calculation)
+                    size_mb = duration * (int(quality) / 100) if duration else 50
                     formats.append({
                         'format': 'MP4',
                         'quality': f'{quality}p',
-                        'size': size_str,
+                        'size': f'{size_mb:.1f} MB',
                         'type': 'video'
                     })
             
@@ -186,9 +188,7 @@ def get_video_info_endpoint():
         return jsonify(video_info)
     
     except Exception as e:
-        # Log the full error to help with debugging on the server
-        app.logger.error(f"Error in /api/video-info: {e}", exc_info=True)
-        return jsonify({'error': 'Failed to retrieve video information. The video may be private, unavailable, or the URL is incorrect.'}), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/download', methods=['POST'])
 @limiter.limit("3 per minute")
@@ -199,6 +199,10 @@ def download_video():
         video_id = data.get('video_id', '').strip()
         format_type = data.get('format', '').lower()
         quality = data.get('quality', '').strip()
+        captcha_token = data.get('captcha_token')
+        
+        if not captcha_token or not verify_hcaptcha(captcha_token):
+           return jsonify({'error': 'hCaptcha verification failed'}), 403
 
         if not all([video_id, format_type, quality]):
             return jsonify({'error': 'Missing required parameters'}), 400
@@ -259,8 +263,7 @@ def download_video():
             info = get_video_info(url)
             safe_title = "".join(c for c in info['title'] if c.isalnum() or c in (' ', '-', '_')).rstrip()
             safe_title = safe_title[:50]  # Limit filename length
-        except Exception:
-            app.logger.warning(f"Could not get video title for {video_id}. Using default name.")
+        except:
             safe_title = f"video_{video_id}"
         
         # Determine file extension and download name
@@ -284,21 +287,8 @@ def download_video():
         )
     
     except Exception as e:
-        app.logger.error(f"Error in /api/download: {e}", exc_info=True)
-        return jsonify({'error': 'The download process failed. Please try again.'}), 500
+        return jsonify({'error': f'Download failed: {str(e)}'}), 500
 
-@app.route('/')
-def index():
-    """Index route to provide basic API info."""
-    return jsonify({
-        'status': 'ok',
-        'message': 'Welcome to the YouTube Downloader API!',
-        'endpoints': {
-            '/api/health': 'GET - Check API health',
-            '/api/video-info': 'POST - Get video information',
-            '/api/download': 'POST - Download a video/audio'
-        }
-    })
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -315,8 +305,7 @@ def not_found_handler(e):
 
 @app.errorhandler(500)
 def internal_error_handler(e):
-    app.logger.error(f"Unhandled Internal Server Error: {e}", exc_info=True)
-    return jsonify({'error': 'An unexpected internal server error occurred. The issue has been logged.'}), 500
+    return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
