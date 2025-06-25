@@ -32,17 +32,6 @@ DOWNLOADS_DIR = Path("downloads")
 DOWNLOADS_DIR.mkdir(exist_ok=True)
 
 
-def verify_hcaptcha(token):
-    secret = os.getenv("HCAPTCHA_SECRET")
-    response = requests.post(
-        'https://hcaptcha.com/siteverify',
-        data={
-            'secret': secret,
-            'response': token
-        }
-    )
-    return response.json().get('success', False)
-
 def cleanup_old_files():
     """Clean up files older than 1 hour"""
     try:
@@ -169,10 +158,6 @@ def get_video_info_endpoint():
     try:
         data = request.get_json()
         url = data.get('url', '').strip()
-        captcha_token = data.get('captcha_token')
-        
-        if not captcha_token or not verify_hcaptcha(captcha_token):
-            return jsonify({'error': 'hCaptcha verification failed'}), 403
         
         if not url:
             return jsonify({'error': 'URL is required'}), 400
