@@ -1,3 +1,4 @@
+import base64
 import os
 import tempfile
 import time
