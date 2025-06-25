@@ -12,9 +12,13 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import threading
 from zipfile import ZipFile
+import logging
 
 app = Flask(__name__)
 CORS(app)
+
+# Add logging configuration to see errors in production
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Rate limiting setup
 limiter = Limiter(
@@ -182,7 +186,9 @@ def get_video_info_endpoint():
         return jsonify(video_info)
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Log the full error to help with debugging on the server
+        app.logger.error(f"Error in /api/video-info: {e}", exc_info=True)
+        return jsonify({'error': 'Failed to retrieve video information. The video may be private, unavailable, or the URL is incorrect.'}), 500
 
 @app.route('/api/download', methods=['POST'])
 @limiter.limit("3 per minute")
@@ -253,7 +259,8 @@ def download_video():
             info = get_video_info(url)
             safe_title = "".join(c for c in info['title'] if c.isalnum() or c in (' ', '-', '_')).rstrip()
             safe_title = safe_title[:50]  # Limit filename length
-        except:
+        except Exception:
+            app.logger.warning(f"Could not get video title for {video_id}. Using default name.")
             safe_title = f"video_{video_id}"
         
         # Determine file extension and download name
@@ -277,7 +284,8 @@ def download_video():
         )
     
     except Exception as e:
-        return jsonify({'error': f'Download failed: {str(e)}'}), 500
+        app.logger.error(f"Error in /api/download: {e}", exc_info=True)
+        return jsonify({'error': 'The download process failed. Please try again.'}), 500
 
 @app.route('/')
 def index():
@@ -307,7 +315,8 @@ def not_found_handler(e):
 
 @app.errorhandler(500)
 def internal_error_handler(e):
-    return jsonify({'error': 'Internal server error'}), 500
+    app.logger.error(f"Unhandled Internal Server Error: {e}", exc_info=True)
+    return jsonify({'error': 'An unexpected internal server error occurred. The issue has been logged.'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
