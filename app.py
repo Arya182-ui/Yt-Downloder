@@ -92,14 +92,16 @@ def extract_video_id(url):
     
     return None
 
-cookie_b64 = os.environ.get("YOUTUBE_COOKIE_B64")
-if not cookie_b64:
-    raise ValueError("YOUTUBE_COOKIE_B64 is not set!")
+secret_path = "/etc/secrets/youtube_cookies.b64"
+
+# 🔐 Step 1: Read & decode the file
+with open(secret_path, "rb") as f:
+    cookie_b64 = f.read()
     
 with open("cookies.txt", "wb") as f:
     f.write(cookie_bytes)
 
-print("✅ cookies.txt successfully created from base64.")
+print("✅ Decoded cookies.txt created from Secret File.")
         
 def get_video_info(url):
     """Get video information using yt-dlp"""
