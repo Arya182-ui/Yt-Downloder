@@ -16,7 +16,7 @@ import threading
 from zipfile import ZipFile
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://ytdownloader-sigma.vercel.app"], supports_credentials=True)
 
 # Rate limiting setup
 limiter = Limiter(
