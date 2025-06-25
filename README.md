@@ -36,8 +36,8 @@ A beautiful, full-stack web application for downloading YouTube videos in multip
 
 1. **Clone the repository and navigate into it**
    ```bash
-   git clone <repository-url>
-   cd youtube-downloader
+   git clone https://github.com/Arya182-ui/Yt-Downloder
+   cd Yt-Downloder
    ```
 
 2. **Configure Environment Variables**
@@ -178,3 +178,6 @@ The application handles various error scenarios:
 ## License
 
 This project is for educational purposes only. Please respect YouTube's Terms of Service and copyright laws.
+
+🙌 Author
+Built with ❤️ by Arya (Ayush Gangwar)
