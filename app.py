@@ -1,4 +1,4 @@
-import os
+`import os
 import tempfile
 import time
 import json
@@ -92,7 +92,7 @@ def extract_video_id(url):
     
     return None
 
-secret_path = "/etc/secrets/youtube_cookies.b64"
+secret_path = "/etc/secrets/YOUTUBE_COOKIE_B64"
 
 # 🔐 Step 1: Read & decode the file
 with open(secret_path, "rb") as f:
