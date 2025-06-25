@@ -92,20 +92,22 @@ def extract_video_id(url):
     
     return None
 
-b64_cookie = os.getenv("YOUTUBE_COOKIE_B64")
-cookie_path = "youtube_cookies.txt"
-
-if b64_cookie:
-    with open(cookie_path, "wb") as f:
-        f.write(base64.b64decode(b64_cookie))
-else:
+cookie_b64 = os.environ.get("YOUTUBE_COOKIE_B64")
+if not cookie_b64:
     raise ValueError("YOUTUBE_COOKIE_B64 is not set!")
+
+# Decode and write to cookies.txt
+cookie_bytes = base64.b64decode(cookie_b64)
+with open("cookies.txt", "wb") as f:
+    f.write(cookie_bytes)
+
+print("✅ cookies.txt successfully created from base64.")
         
 def get_video_info(url):
     """Get video information using yt-dlp"""
     ydl_opts = {
         'quiet': True,
-        'cookiefile': 'cookie_path',
+        'cookiefile': 'cookies.txt',
         'skip_download': True,
         'noplaylist': True,
     }
