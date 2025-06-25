@@ -14,9 +14,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import threading
 from zipfile import ZipFile
+from collections import defaultdict
 
 app = Flask(__name__)
 CORS(app, origins=["https://ytdownloader-sigma.vercel.app"], supports_credentials=True)
+progress_data = defaultdict(dict)
 
 # Rate limiting setup
 limiter = Limiter(
@@ -209,6 +211,15 @@ def get_video_info_endpoint():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+        
+
+@app.route('/api/progress/<video_id>', methods=['GET'])
+@cross_origin()
+def get_progress(video_id):
+    if video_id not in progress_data:
+        return jsonify({'status': 'not_found'}), 404
+    return jsonify(progress_data[video_id])
+
 
 @app.route('/api/download', methods=['POST'])
 @limiter.limit("3 per minute")
@@ -228,6 +239,19 @@ def download_video():
         # Create unique filename
         timestamp = int(time.time())
         
+        def download_hook(d):
+            if d['status'] == 'downloading':
+                progress_data[video_id] = {
+                    'status': 'downloading',
+                    'downloaded': d.get('downloaded_bytes', 0),
+                    'total': d.get('total_bytes', d.get('total_bytes_estimate', 0)),
+                    'speed': d.get('speed', 0),
+                    'eta': d.get('eta', 0),
+                    'percent': round(d.get('downloaded_bytes', 0) / d.get('total_bytes', 1) * 100, 2)
+                }
+            elif d['status'] == 'finished':
+                progress_data[video_id]['status'] = 'finished'
+        
         if format_type == 'mp4':
             # Video download
             quality_num = quality.replace('p', '')
@@ -239,6 +263,7 @@ def download_video():
                 'quiet': True,
                 'no_warnings': True,
                 'cookiefile': 'cookies.txt',
+                'progress_hooks': [download_hook],
             }
         
         elif format_type == 'mp3':
@@ -261,6 +286,7 @@ def download_video():
                 'quiet': True,
                 'no_warnings': True,
                 'cookiefile': 'cookies.txt',
+                'progress_hooks': [download_hook],
             }
         else:
             return jsonify({'error': 'Unsupported format'}), 400
