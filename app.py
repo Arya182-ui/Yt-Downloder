@@ -14,6 +14,11 @@ from flask_limiter.util import get_remote_address
 import threading
 from zipfile import ZipFile
 
+cookie_b64 = os.environ.get("YOUTUBE_COOKIE_B64")
+if cookie_b64:
+    with open("youtube_cookies.txt", "wb") as f:
+        f.write(base64.b64decode(cookie_b64))
+
 app = Flask(__name__)
 CORS(app)
 
@@ -96,7 +101,9 @@ def get_video_info(url):
     """Get video information using yt-dlp"""
     ydl_opts = {
         'quiet': True,
-        'no_warnings': True,
+        'cookiefile': 'youtube_cookies.txt',
+        'skip_download': True,
+        'noplaylist': True,
     }
     
     try:
