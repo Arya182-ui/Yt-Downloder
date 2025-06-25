@@ -95,11 +95,15 @@ def extract_video_id(url):
 secret_path = "/etc/secrets/YOUTUBE_COOKIE_B64"
 
 # 🔐 Step 1: Read & decode the file
+secret_path = "/etc/secrets/YOUTUBE_COOKIE_B64"
+
+# 🔐 Step 1: Read base64-encoded cookie string from secret file
 with open(secret_path, "rb") as f:
     cookie_b64 = f.read()
-    
+
+# ✅ Step 2: Decode base64 and write to cookies.txt
 with open("cookies.txt", "wb") as f:
-    f.write(cookie_b64)
+    f.write(base64.b64decode(cookie_b64))
 
 print("✅ Decoded cookies.txt created from Secret File.")
         
