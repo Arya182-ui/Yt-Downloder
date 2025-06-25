@@ -53,7 +53,9 @@ def verify_hcaptcha(token):
             'response': token
         }
     )
-    return response.json().get('success', False)
+    result = response.json()
+    print(f"hCaptcha response: {result}")
+    return result.get('success', False)
 
 def cleanup_old_files():
     """Clean up files older than 1 hour"""
