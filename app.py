@@ -95,9 +95,7 @@ def extract_video_id(url):
 cookie_b64 = os.environ.get("YOUTUBE_COOKIE_B64")
 if not cookie_b64:
     raise ValueError("YOUTUBE_COOKIE_B64 is not set!")
-
-# Decode and write to cookies.txt
-cookie_bytes = base64.b64decode(cookie_b64)
+    
 with open("cookies.txt", "wb") as f:
     f.write(cookie_bytes)
 
