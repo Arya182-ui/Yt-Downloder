@@ -99,7 +99,7 @@ with open(secret_path, "rb") as f:
     cookie_b64 = f.read()
     
 with open("cookies.txt", "wb") as f:
-    f.write(cookie_bytes)
+    f.write(cookie_b64)
 
 print("✅ Decoded cookies.txt created from Secret File.")
         
