@@ -219,11 +219,7 @@ def download_video():
         video_id = data.get('video_id', '').strip()
         format_type = data.get('format', '').lower()
         quality = data.get('quality', '').strip()
-        captcha_token = data.get('captcha_token')
-        
-        if not captcha_token or not verify_hcaptcha(captcha_token):
-           return jsonify({'error': 'hCaptcha verification failed'}), 403
-
+      
         if not all([video_id, format_type, quality]):
             return jsonify({'error': 'Missing required parameters'}), 400
         
