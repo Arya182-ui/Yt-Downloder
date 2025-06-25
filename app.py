@@ -242,6 +242,7 @@ def download_video():
                 'outtmpl': str(DOWNLOADS_DIR / output_filename),
                 'quiet': True,
                 'no_warnings': True,
+                'cookiefile': 'cookies.txt',
             }
         
         elif format_type == 'mp3':
@@ -263,6 +264,7 @@ def download_video():
                 }],
                 'quiet': True,
                 'no_warnings': True,
+                'cookiefile': 'cookies.txt',
             }
         else:
             return jsonify({'error': 'Unsupported format'}), 400
