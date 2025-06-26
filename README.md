@@ -190,7 +190,8 @@ But here's the reality of production:
 
 ## License
 
-This project is for educational purposes only. Please respect YouTube's Terms of Service and copyright laws.
+⚠️ This public instance is for demo purposes only. Video download features are subject to rate limits and may break due to expired authentication cookies. Please use responsibly.
+
 
 ## 🙌 Author
 
