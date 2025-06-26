@@ -182,7 +182,7 @@ But here's the reality of production:
 📉 These cookies expire fast, often within hours.
 🔁 There's no built-in refresh — requiring manual re-export & deployment.
 💥 This leads to frontend errors like this:
-🖼️ ![YouTube Cookie Error](Screenshot%202025-06-26%20082722.png)
+ ![YouTube Cookie Error](Screenshot%202025-06-26%20082722.png)
 
 
 
