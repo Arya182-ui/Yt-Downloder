@@ -175,6 +175,18 @@ The application handles various error scenarios:
 - Safari 14+
 - Edge 90+
 
+## Error Facing : Cookie Expiry & Manual Refresh
+To support region-restricted or age-gated YouTube content, I integrated browser-exported cookies into the backend.
+But here's the reality of production:
+
+📉 These cookies expire fast, often within hours.
+🔁 There's no built-in refresh — requiring manual re-export & deployment.
+💥 This leads to frontend errors like this:
+🖼️ ![YouTube Cookie Error](./assets/youtube-cookie-error.png)
+
+
+🧠 Lesson learned: Authentication is not just about passing headers — it’s about session lifecycle management. A “working” cookie today might break your app tomorrow.
+
 ## License
 
 This project is for educational purposes only. Please respect YouTube's Terms of Service and copyright laws.
