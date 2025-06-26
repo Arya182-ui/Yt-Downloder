@@ -182,7 +182,7 @@ But here's the reality of production:
 📉 These cookies expire fast, often within hours.
 🔁 There's no built-in refresh — requiring manual re-export & deployment.
 💥 This leads to frontend errors like this:
-🖼️ ![YouTube Cookie Error](./assets/youtube-cookie-error.png)
+🖼️ ![YouTube Cookie Error](./Screenshot 2025-06-26 082722.png)
 
 
 🧠 Lesson learned: Authentication is not just about passing headers — it’s about session lifecycle management. A “working” cookie today might break your app tomorrow.
