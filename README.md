@@ -196,3 +196,16 @@ But here's the reality of production:
 ## 🙌 Author
 
 Built with ❤️ by Arya (Ayush Gangwar)
+
+
+## Contact
+If you have any questions, feel free to reach out:
+
+- GitHub: [Arya182-ui](https://github.com/Arya182-ui)
+- Email: [arya119000@gmail.com]
+
+
+## ☕ Support Me
+
+Do you like My projects? You can show your support by buying me a coffee! Your contributions motivate me to keep improving and building more awesome projects. 💻❤  
+[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](http://buymeacoffee.com/Arya182)
