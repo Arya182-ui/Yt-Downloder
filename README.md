@@ -3,7 +3,8 @@
 <div align="center">
 
 ![YouTube Downloader](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=28&pause=1000&color=FF0000&center=true&vCenter=true&width=700&lines=🎬+Professional+Video+Downloader;🎵+Multi-Format+Media+Extractor;⚡+High-Performance+Streaming;🛡️+Enterprise-Grade+Security)
-
+[![Status](https://img.shields.io/badge/Status-Maintenance%20Mode-yellow?style=for-the-badge&logo=tools)](https://github.com/Arya182-ui/Yt-Downloder)
+[![Contributions](https://img.shields.io/badge/Contributions-Welcome-brightgreen?style=for-the-badge&logo=git)](https://github.com/Arya182-ui/Yt-Downloder)
 [![YouTube Downloader](https://img.shields.io/badge/YouTube-Downloader-red?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/Arya182-ui/Yt-Downloder)
 [![Full Stack](https://img.shields.io/badge/Full-Stack-orange?style=for-the-badge&logo=stackoverflow&logoColor=white)](https://github.com/Arya182-ui/Yt-Downloder)
 [![React TypeScript](https://img.shields.io/badge/React-TypeScript-blue?style=for-the-badge&logo=react&logoColor=white)](https://github.com/Arya182-ui/Yt-Downloder)
@@ -16,6 +17,7 @@
 </div>
 
 ---
+
 
 ## 🌟 **Project Overview**
 
